@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carteira de Investimentos - App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #ddd; }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: bold; color: #2563eb; }
+        .controls { display: flex; gap: 10px; }
+        select, button { padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; }
+        button { background: #2563eb; color: white; border: none; cursor: pointer; }
+        .card { background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .summary-item { text-align: center; }
+        .summary-item .label { color: #666; font-size: 0.9rem; margin-bottom: 5px; }
+        .summary-item .value { font-size: 1.8rem; font-weight: bold; }
+        .positive { color: #10b981; }
+        .negative { color: #ef4444; }
+        .main { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .main { grid-template-columns: 1fr; } }
+        .chart-container { height: 300px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8f9fa; padding: 12px; text-align: left; border-bottom: 2px solid #ddd; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+        .asset-icon { width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 10px; }
+        .crypto { background: #f59e0b; }
+        .stock { background: #2563eb; }
+        .news-item { padding: 15px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; }
+        .news-item h4 { margin-bottom: 5px; }
+        .news-meta { display: flex; justify-content: space-between; color: #666; font-size: 0.85rem; }
+        .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <span>Carteira Invest</span>
+            </div>
+            <div class="controls">
+                <select id="currency">
+                    <option value="brl">BRL (R$)</option>
+                    <option value="usd">USD ($)</option>
+                    <option value="eur">EUR (€)</option>
+                </select>
+                <button id="refresh"><i class="fas fa-sync-alt"></i> Atualizar</button>
+            </div>
+        </header>
+
+        <section class="card">
+            <h2><i class="fas fa-wallet"></i> Resumo do Portfólio</h2>
+            <div class="summary">
+                <div class="summary-item">
+                    <div class="label">Valor Total</div>
+                    <div id="total-value" class="value">R$ 0,00</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Lucro/Prejuízo</div>
+                    <div id="total-pnl" class="value">R$ 0,00</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Variação %</div>
+                    <div id="total-change" class="value">0.00%</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Total Ativos</div>
+                    <div id="total-assets" class="value">0</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="main">
+            <div class="card">
+                <h2><i class="fas fa-chart-line"></i> Evolução do Portfólio</h2>
+                <div style="margin-bottom: 15px;">
+                    <button class="time-btn active" data-period="7d">7D</button>
+                    <button class="time-btn" data-period="30d">30D</button>
+                    <button class="time-btn" data-period="90d">90D</button>
+                    <button class="time-btn" data-period="1y">1A</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-plus-circle"></i> Adicionar Ativo</h2>
+                <form id="add-form">
+                    <div class="form-group">
+                        <label>Tipo de Ativo</label>
+                        <select id="type" required>
+                            <option value="">Selecione...</option>
+                            <option value="crypto">Criptomoeda</option>
+                            <option value="stock">Ação</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Símbolo (ex: BTC, AAPL)</label>
+                        <input type="text" id="symbol" placeholder="BTC, AAPL, etc." required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome do Ativo</label>
+                        <input type="text" id="name" placeholder="Bitcoin, Apple Inc." required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Quantidade</label>
+                            <input type="number" id="quantity" step="0.000001" min="0" placeholder="1.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Preço de Compra</label>
+                            <input type="number" id="price" step="0.01" min="0" placeholder="50000" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Moeda de Compra</label>
+                        <select id="currency-buy" required>
+                            <option value="usd">USD ($)</option>
+                            <option value="brl">BRL (R$)</option>
+                            <option value="eur">EUR (€)</option>
+                        </select>
+                    </div>
+                    <button type="submit" style="width: 100%; background: #10b981;">
+                        <i class="fas fa-plus"></i> Adicionar à Carteira
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <section class="main">
+            <div class="card">
+                <h2><i class="fas fa-list"></i> Meus Ativos</h2>
+                <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+                    <input type="text" id="search" placeholder="Buscar ativos..." style="flex: 1; padding: 8px;">
+                    <select id="filter">
+                        <option value="all">Todos</option>
+                        <option value="crypto">Criptomoedas</option>
+                        <option value="stock">Ações</option>
+                    </select>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ativo</th>
+                                <th>Qtd</th>
+                                <th>Preço Atual</th>
+                                <th>Investido</th>
+                                <th>Atual</th>
+                                <th>P/L</th>
+                                <th>%</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assets">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 40px; color: #666;">
+                                    <i class="fas fa-wallet" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                                    <p>Nenhum ativo na carteira</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-newspaper"></i> Notícias</h2>
+                <div style="margin-bottom: 15px;">
+                    <button class="news-filter active" data-cat="all">Todas</button>
+                    <button class="news-filter" data-cat="crypto">Cripto</button>
+                    <button class="news-filter" data-cat="stocks">Ações</button>
+                </div>
+                <div id="news">
+                    <div class="news-item">
+                        <h4>Bitcoin atinge US$ 52.000</h4>
+                        <p>Criptomoeda em alta com adoção institucional</p>
+                        <div class="news-meta">
+                            <span>CoinDesk</span>
+                            <span style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">Cripto</span>
+                        </div>
+                    </div>
+                    <div class="news-item">
+                        <h4>Apple anuncia novos produtos</h4>
+                        <p>Ações sobem 3% após anúncio</p>
+                        <div class="news-meta">
+                            <span>Bloomberg</span>
+                            <span style="background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">Ações</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>Carteira de Investimentos - App Completa</p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">
+                <i class="fas fa-sync-alt"></i> Última atualização: <span id="update-time">Agora</span>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Dados de exemplo
+        const sampleData = [
+            { id: 1, type: 'crypto', symbol: 'BTC', name: 'Bitcoin', qty: 0.5, buyPrice: 45000, buyCurr: 'usd', currPrice: 52000, currCurr: 'usd' },
+            { id: 2, type: 'crypto', symbol: 'ETH', name: 'Ethereum', qty: 3.2, buyPrice: 2800, buyCurr: 'usd', currPrice: 3100, currCurr: 'usd' },
+            { id: 3, type: 'stock', symbol: 'AAPL', name: 'Apple Inc.', qty: 10, buyPrice: 170, buyCurr: 'usd', currPrice: 185, currCurr: 'usd' },
+            { id: 4, type: 'stock', symbol: 'MSFT', name: 'Microsoft', qty: 8, buyPrice: 380, buyCurr: 'usd', currPrice: 420, currCurr: 'usd' },
+            { id: 5, type: 'stock', symbol: 'SAP', name: 'SAP SE', qty: 15, buyPrice: 140, buyCurr: 'eur', currPrice: 155, currCurr: 'eur' }
+        ];
+
+        // Taxas de câmbio
+        const rates = {
+            usd: { brl: 5.0, eur: 0.92 },
+            brl: { usd: 0.2, eur: 0.184 },
+            eur: { usd: 1.087, brl: 5.435 }
+        };
+
+        let currentCurrency = 'brl';
+        let assets = [];
+        let chart = null;
+
+        // Inicializar
+        function init() {
+            loadAssets();
+            initChart();
+            setupEvents();
+            updateUI();
+        }
+
+        function loadAssets() {
+            const saved = localStorage.getItem('carteira-app');
+            assets = saved ? JSON.parse(saved) : [...sampleData];
+        }
+
+        function saveAssets() {
+            localStorage.setItem('carteira-app', JSON.stringify(assets));
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('chart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                    datasets: [{
+                        label: 'Valor',
+                        data: [45000, 48000, 52000, 51000, 53000, 55000],
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function setupEvents() {
+            // Moeda
+            document.getElementById('currency').addEventListener('change', (e) => {
+                currentCurrency = e.target.value;
+                updateUI();
+            });
+
+            // Atualizar
+            document.getElementById('refresh').addEventListener('click', () => {
+                updatePrices();
+                updateUI();
+                alert('Preços atualizados!');
+            });
+
+            // Formulário
+            document.getElementById('add-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                addAsset();
+            });
+
+            // Busca
+            document.getElementById('search').addEventListener('input', (e) => {
+                filterAssets(e.target.value);
+            });
+
+            // Filtro
+            document.getElementById('filter').addEventListener('change', (e) => {
+                filterByType(e.target.value);
+            });
+
+            // Período do gráfico
+            document.querySelectorAll('.time-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    // Aqui atualizaria o gráfico com dados reais
+                });
+            });
+
+            // Filtro de notícias
+            document.querySelectorAll('.news-filter').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.news-filter').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    filterNews(e.target.dataset.cat);
+                });
+            });
+        }
+
+        function convert(value, from, to) {
+            if (from === to) return value;
+            if (from === 'usd') return value * rates.usd[to];
+            if (to === 'usd') return value / rates[from].usd;
+            return value * rates[from].usd * rates.usd[to];
+        }
+
+        function formatCurrency(value, currency) {
+            const formats = {
+                brl: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }),
+                usd: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }),
+                eur: new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' })
+            };
+            return formats[currency].format(value);
+        }
+
+        function calculateAsset(asset) {
+            const buyPrice = convert(asset.buyPrice, asset.buyCurr, currentCurrency);
+            const currPrice = convert(asset.currPrice, asset.curr

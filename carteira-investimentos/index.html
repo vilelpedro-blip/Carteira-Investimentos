@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carteira de Investimentos - Cripto & Ações</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Cabeçalho -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <h1>Carteira Invest</h1>
+            </div>
+            <div class="header-controls">
+                <div class="currency-selector">
+                    <select id="currency-select">
+                        <option value="brl">BRL (R$)</option>
+                        <option value="usd">USD ($)</option>
+                        <option value="eur">EUR (€)</option>
+                    </select>
+                </div>
+                <button id="refresh-btn" class="btn btn-primary">
+                    <i class="fas fa-sync-alt"></i> Atualizar
+                </button>
+            </div>
+        </header>
+
+        <!-- Dashboard Principal -->
+        <main class="dashboard">
+            <!-- Resumo do Portfólio -->
+            <section class="portfolio-summary">
+                <div class="summary-card">
+                    <h2><i class="fas fa-wallet"></i> Resumo do Portfólio</h2>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <span class="label">Valor Total</span>
+                            <span id="total-value" class="value">R$ 0,00</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Lucro/Prejuízo</span>
+                            <span id="total-pnl" class="value pnl-positive">R$ 0,00</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Variação %</span>
+                            <span id="total-change" class="value change-positive">0.00%</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Total Ativos</span>
+                            <span id="total-assets" class="value">0</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Gráfico e Formulário -->
+            <section class="main-content">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h2><i class="fas fa-chart-line"></i> Evolução do Portfólio</h2>
+                        <div class="chart-controls">
+                            <button class="time-btn active" data-period="7d">7D</button>
+                            <button class="time-btn" data-period="30d">30D</button>
+                            <button class="time-btn" data-period="90d">90D</button>
+                            <button class="time-btn" data-period="1y">1A</button>
+                        </div>
+                    </div>
+                    <canvas id="portfolio-chart"></canvas>
+                </div>
+
+                <!-- Formulário para Adicionar Ativo -->
+                <div class="add-asset-form">
+                    <h2><i class="fas fa-plus-circle"></i> Adicionar Ativo</h2>
+                    <form id="add-asset-form">
+                        <div class="form-group">
+                            <label for="asset-type">Tipo de Ativo</label>
+                            <select id="asset-type" required>
+                                <option value="">Selecione...</option>
+                                <option value="crypto">Criptomoeda</option>
+                                <option value="stock">Ação</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="asset-symbol">Símbolo (ex: BTC, AAPL)</label>
+                            <input type="text" id="asset-symbol" placeholder="BTC, ETH, AAPL, TSLA..." required>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="asset-quantity">Quantidade</label>
+                                <input type="number" id="asset-quantity" step="0.000001" min="0.000001" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="asset-price">Preço de Compra</label>
+                                <input type="number" id="asset-price" step="0.01" min="0.01" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="asset-date">Data da Compra</label>
+                            <input type="date" id="asset-date" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="asset-currency">Moeda da Compra</label>
+                            <select id="asset-currency" required>
+                                <option value="brl">BRL (R$)</option>
+                                <option value="usd">USD ($)</option>
+                                <option value="eur">EUR (€)</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Adicionar ao Portfólio
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Tabela de Ativos e Notícias -->
+            <section class="bottom-content">
+                <!-- Tabela de Ativos -->
+                <div class="assets-table-container">
+                    <div class="table-header">
+                        <h2><i class="fas fa-table"></i> Meus Ativos</h2>
+                        <div class="table-controls">
+                            <input type="text" id="search-assets" placeholder="Buscar ativo...">
+                            <select id="filter-type">
+                                <option value="all">Todos</option>
+                                <option value="crypto">Cripto</option>
+                                <option value="stock">Ações</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="assets-table">
+                            <thead>
+                                <tr>
+                                    <th>Ativo</th>
+                                    <th>Quantidade</th>
+                                    <th>Preço Médio</th>
+                                    <th>Valor Atual</th>
+                                    <th>Variação %</th>
+                                    <th>Lucro/Prejuízo</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assets-table-body">
+                                <!-- Ativos serão inseridos aqui via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Feed de Notícias -->
+                <div class="news-feed">
+                    <div class="news-header">
+                        <h2><i class="fas fa-newspaper"></i> Notícias do Mercado</h2>
+                        <div class="news-filters">
+                            <button class="news-filter active" data-category="all">Todas</button>
+                            <button class="news-filter" data-category="crypto">Cripto</button>
+                            <button class="news-filter" data-category="stocks">Ações</button>
+                            <button class="news-filter" data-category="macro">Macro</button>
+                        </div>
+                    </div>
+                    <div class="news-list" id="news-list">
+                        <!-- Notícias serão carregadas aqui -->
+                        <div class="loading-news">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando notícias...
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Modal para Editar/Remover Ativo -->
+        <div id="asset-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2 id="modal-title">Editar Ativo</h2>
+                <form id="edit-asset-form">
+                    <input type="hidden" id="edit-asset-id">
+                    
+                    <div class="form-group">
+                        <label for="edit-asset-quantity">Quantidade</label>
+                        <input type="number" id="edit-asset-quantity" step="0.000001" min="0.000001" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-asset-price">Preço Médio</label>
+                        <input type="number" id="edit-asset-price" step="0.01" min="0.01" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-asset-date">Data da Compra</label>
+                        <input type="date" id="edit-asset-date" required>
+                    </div>
+                    
+                    <div class="modal-buttons">
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                        <button type="button" id="delete-asset-btn" class="btn btn-danger">Remover Ativo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container"></div>
+
+        <!-- Rodapé -->
+        <footer class="footer">
+            <p>Carteira Invest &copy; 2026 - Desenvolvido para gestão de investimentos em criptomoedas e ações</p>
+            <p class="footer-info">
+                <i class="fas fa-info-circle"></i>
+                Dados de criptomoedas via CoinGecko API | Ações via Yahoo Finance | Notícias via NewsAPI
+            </p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="portfolio.js"></script>
+    <script src="api.js"></script>
+    <script src="charts.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

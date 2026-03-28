@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carteira de Investimentos - Cripto & Ações</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos compactados */
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --primary-color:#2563eb;--primary-dark:#1d4ed8;--secondary-color:#10b981;
+            --danger-color:#ef4444;--warning-color:#f59e0b;--dark-color:#1f2937;
+            --light-color:#f9fafb;--gray-color:#6b7280;--border-color:#e5e7eb;
+            --shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg:0 10px 15px -3px rgba(0,0,0,0.1),0 4px 6px -2px rgba(0,0,0,0.05);
+            --radius:8px;--transition:all 0.3s ease
+        }
+        body{font-family:'Inter',sans-serif;background-color:#f3f4f6;color:var(--dark-color);line-height:1.6}
+        .container{max-width:1400px;margin:0 auto;padding:0 20px}
+        .header{display:flex;justify-content:space-between;align-items:center;padding:20px 0;margin-bottom:30px;border-bottom:1px solid var(--border-color)}
+        .logo{display:flex;align-items:center;gap:12px}
+        .logo i{font-size:2rem;color:var(--primary-color)}
+        .logo h1{font-size:1.8rem;font-weight:700;color:var(--dark-color)}
+        .header-controls{display:flex;align-items:center;gap:15px}
+        .currency-selector select{padding:8px 12px;border:1px solid var(--border-color);border-radius:var(--radius);background:white;font-size:0.9rem;cursor:pointer;transition:var(--transition)}
+        .currency-selector select:hover{border-color:var(--primary-color)}
+        .btn{padding:10px 20px;border:none;border-radius:var(--radius);font-size:0.9rem;font-weight:500;cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;gap:8px}
+        .btn-primary{background-color:var(--primary-color);color:white}
+        .btn-primary:hover{background-color:var(--primary-dark)}
+        .btn-success{background-color:var(--secondary-color);color:white}
+        .btn-success:hover{background-color:#0da271}
+        .btn-danger{background-color:var(--danger-color);color:white}
+        .btn-danger:hover{background-color:#dc2626}
+        .dashboard{display:flex;flex-direction:column;gap:30px}
+        .portfolio-summary{background:white;border-radius:var(--radius);padding:25px;box-shadow:var(--shadow)}
+        .summary-card h2{font-size:1.3rem;margin-bottom:20px;color:var(--dark-color);display:flex;align-items:center;gap:10px}
+        .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
+        .summary-item{display:flex;flex-direction:column;gap:8px}
+        .summary-item .label{font-size:0.9rem;color:var(--gray-color);font-weight:500}
+        .summary-item .value{font-size:1.8rem;font-weight:700;color:var(--dark-color)}
+        .pnl-positive{color:var(--secondary-color)!important}
+        .pnl-negative{color:var(--danger-color)!important}
+        .change-positive{color:var(--secondary-color)!important}
+        .change-negative{color:var(--danger-color)!important}
+        .main-content{display:grid;grid-template-columns:2fr 1fr;gap:30px}
+        @media (max-width:1024px){.main-content{grid-template-columns:1fr}}
+        .chart-container{background:white;border-radius:var(--radius);padding:25px;box-shadow:var(--shadow)}
+        .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+        .chart-header h2{font-size:1.3rem;color:var(--dark-color);display:flex;align-items:center;gap:10px}
+        .chart-controls{display:flex;gap:10px}
+        .time-btn{padding:6px 12px;border:1px solid var(--border-color);background:white;border-radius:4px;font-size:0.85rem;cursor:pointer;transition:var(--transition)}
+        .time-btn:hover{border-color:var(--primary-color);color:var(--primary-color)}
+        .time-btn.active{background-color:var(--primary-color);color:white;border-color:var(--primary-color)}
+        .add-asset-form{background:white;border-radius:var(--radius);padding:25px;box-shadow:var(--shadow)}
+        .add-asset-form h2{font-size:1.3rem;margin-bottom:20px;color:var(--dark-color);display:flex;align-items:center;gap:10px}
+        .form-group{margin-bottom:20px}
+        .form-group label{display:block;margin-bottom:8px;font-size:0.9rem;font-weight:500;color:var(--dark-color)}
+        .form-group input,.form-group select{width:100%;padding:10px;border:1px solid var(--border-color);border-radius:var(--radius);font-size:0.95rem;transition:var(--transition)}
+        .form-group input:focus,.form-group select:focus{outline:none;border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(37,99,235,0.1)}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+        .bottom-content{display:grid;grid-template-columns:2fr 1fr;gap:30px}
+        @media (max-width:1024px){.bottom-content{grid-template-columns:1fr}}
+        .assets-table-container{background:white;border-radius:var(--radius);padding:25px;box-shadow:var(--shadow)}
+        .table-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+        .table-header h2{font-size:1.3rem;color:var(--dark-color);display:flex;align-items:center;gap:10px}
+        .table-controls{display:flex;gap:15px}
+        .table-controls input,.table-controls select{padding:8px 12px;border:1px solid var(--border-color);border-radius:var(--radius);font-size:0.9rem}
+        .table-wrapper{overflow-x:auto}
+        #assets-table{width:100%;border-collapse:collapse}
+        #assets-table thead{background-color:var(--light-color)}
+        #assets-table th{padding:15px;text-align:left;font-weight:600;color:var(--dark-color);border-bottom:2px solid var(--border-color);white-space:nowrap}
+        #assets-table td{padding:15px;border-bottom:1px solid var(--border-color);vertical-align:middle}
+        #assets-table tbody tr:hover{background-color:var(--light-color)}
+        .asset-info{display:flex;align-items:center;gap:10px}
+        .asset-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;color:white}
+        .crypto-icon{background-color:#f59e0b}
+        .stock-icon{background-color:var(--primary-color)}
+        .asset-symbol{font-weight:600;color:var(--dark-color)}
+        .asset-name{font-size:0.85rem;color:var(--gray-color)}
+        .table-actions{display:flex;gap:8px}
+        .action-btn{padding:6px 10px;border:none;border-radius:4px;cursor:pointer;transition:var(--transition);display:flex;align-items:center;justify-content:center}
+        .edit-btn{background-color:rgba(37,99,235,0.1);color:var(--primary-color)}
+        .edit-btn:hover{background-color:rgba(37,99,235,0.2)}
+        .delete-btn{background-color:rgba(239,68,68,0.1);color:var(--danger-color)}
+        .delete-btn:hover{background-color:rgba(239,68,68,0.2)}
+        .news-feed{background:white;border-radius:var(--radius);padding:25px;box-shadow:var(--shadow);height:fit-content}
+        .news-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+        .news-header h2{font-size:1.3rem;color:var(--dark-color);display:flex;align-items:center;gap:10px}
+        .news-filters{display:flex;gap:8px;flex-wrap:wrap}
+        .news-filter{padding:6px 12px;border:1px solid var(--border-color);background:white;border-radius:20px;font-size:0.8rem;cursor:pointer;transition:var(--transition)}
+        .news-filter:hover{border-color:var(--primary-color);color:var(--primary-color)}
+        .news-filter.active{background-color:var(--primary-color);color:white;border-color:var(--primary-color)}
+        .news-list{display:flex;flex-direction:column;gap:15px}
+        .news-item{padding:15px;border:1px solid var(--border-color);border-radius:var(--radius);transition:var(--transition)}
+        .news-item:hover{border-color:var(--primary-color);box-shadow:var(--shadow)}
+        .news-item h3{font-size:1rem;margin-bottom:8px;color:var(--dark-color)}
+        .news-item p{font-size:0.9rem;color:var(--gray-color);margin-bottom:10px;line-height:1.5}
+        .news-meta{display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;color:var(--gray-color)}
+        .news-category{padding:3px 8px;border-radius:12px;font-size:0.75rem;font-weight:500}
+        .category-crypto{background-color:rgba(245,158,11,0.1);color:#f59e0b}
+        .category-stocks{background-color:rgba(37,99,235,0.1);color:var(--primary-color)}
+        .category-macro{background-color:rgba(16,185,129,0.1);color:var(--secondary-color)}
+        .loading-news{text-align:center;padding:40px;color:var(--gray-color);display:flex;flex-direction:column;align-items:center;gap:10px}
+        .loading-news i{font-size:1.5rem}
+        .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center}
+        .modal-content{background:white;border-radius:var(--radius);padding:30px;width:90%;max-width:500px;position:relative;box-shadow:var(--shadow-lg)}
+        .close-modal{position:absolute;top:15px;right:15px;font-size:1.5rem;cursor:pointer;color:var(--gray-color);transition:var(--transition)}
+        .close-modal:hover{color:var(--dark-color)}
+        .modal-buttons{display:flex;gap:15px;margin-top:20px}
+        #toast-container{position:fixed;top:20px;right:20px;z-index:1001;display:flex;flex-direction:column;gap:10px}
+        .toast{padding:15px 20px;border-radius:var(--radius);background:white;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:10px;animation:slideIn 0.3s ease;min-width:300px}
+        .toast.success{border-left:4px solid var(--secondary-color)}
+        .toast.error{border-left:4px solid var(--danger-color)}
+        .toast.info{border-left:4px solid var(--primary-color)}
+        @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+        .footer{margin-top:50px;padding:30px 0;text-align:center;border-top:1px solid var(--border-color);color:var(--gray-color);font-size:0.9rem}
+        .footer-info{margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px}
+        .text-success{color:var(--secondary-color)}
+        .text-danger{color:var(--danger-color)}
+        @media (max-width:768px){.header{flex-direction:column;gap:15px;text-align:center}.header-controls{width:100%;justify-content:center}.summary-grid{grid-template-columns:repeat(2,1fr)}.form-row{grid-template-columns:1fr}.table-header,.news-header{flex-direction:column;gap:15px;align-items:flex-start}.table-controls,.news-filters{width:100%}}
+        @media (max-width:480px){.summary-grid{grid-template-columns:1fr}.container{padding:0 15px}.chart-header{flex-direction:column;gap:15px;align-items:flex-start}.chart-controls{width:100%;justify-content:flex-start}}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cabeçalho -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <h1>Carteira Invest</h1>
+            </div>
+            <div class="header-controls">
+                <div class="currency-selector">
+                    <select id="currency-select">
+                        <option value="brl">BRL (R$)</option>
+                        <option value="usd">USD ($)</option>
+                        <option value="eur">EUR (€)</option>
+                    </select>
+                </div>
+                <button id="refresh-btn" class="btn btn-primary">
+                    <i class="fas fa-sync-alt"></i> Atualizar
+                </button>
+            </div>
+        </header>
+
+        <!-- Dashboard Principal -->
+        <main class="dashboard">
+            <!-- Resumo do Portfólio -->
+            <section class="portfolio-summary">
+                <div class="summary-card">
+                    <h2><i class="fas fa-wallet"></i> Resumo do Portfólio</h2>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <span class="label">Valor Total</span>
+                            <span id="total-value" class="value">R$ 0,00</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Lucro/Prejuízo</span>
+                            <span id="total-pnl" class="value pnl-positive">R$ 0,00</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Variação %</span>
+                            <span id="total-change" class="value change-positive">0.00%</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Total Ativos</span>
+                            <span id="total-assets" class="value">0</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Gráfico e Formulário -->
+            <section class="main-content">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h2><i class="fas fa-chart-line"></i> Evolução do Portfólio</h2>
+                        <div class="chart-controls">
+                            <button class="time-btn active" data-period="7d">7D</button>
+                            <button class="time-btn" data-period="30d">30D</button>
+                            <button class="time-btn" data-period="90d">90D</button>
+                            <button class="time-btn" data-period="1y">1A</button>
+                        </div>
+                    </div>
+                    <canvas id="portfolio-chart"></canvas>
+                </div>
+
+                <!-- Formulário para Adicionar Ativo -->
+                <div class="

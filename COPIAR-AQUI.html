@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Carteira de Investimentos - VERSÃO LOCAL</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+        h1 { color: #2563eb; }
+        .card { background: #f8fafc; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        button { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>📊 Carteira de Investimentos</h1>
+    <div class="card">
+        <h3>✅ Esta versão funciona LOCALMENTE</h3>
+        <p>Salva este arquivo no teu PC e abre no navegador.</p>
+        <p><strong>Total do Portfólio:</strong> <span id="total">R$ 154.320,50</span></p>
+        <button onclick="atualizar()">Atualizar Preços</button>
+    </div>
+    
+    <div class="card">
+        <h3>📈 Meus Ativos</h3>
+        <ul id="ativos">
+            <li>BTC: 0.5 - R$ 185.420,00</li>
+            <li>ETH: 5.2 - R$ 68.740,00</li>
+            <li>AAPL: 10 - R$ 23.450,00</li>
+        </ul>
+    </div>
+    
+    <script>
+        function atualizar() {
+            document.getElementById('total').textContent = 'R$ ' + 
+                (154320.50 + Math.random() * 5000).toFixed(2).replace('.', ',');
+            alert('Preços atualizados!');
+        }
+        
+        document.write('<p><small>Carregado em: ' + new Date().toLocaleString() + '</small></p>');
+    </script>
+</body>
+</html>

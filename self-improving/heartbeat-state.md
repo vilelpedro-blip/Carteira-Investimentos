@@ -1,0 +1,99 @@
+# Self-Improving Heartbeat State
+
+last_heartbeat_started_at: 2026-03-28T16:13:00Z
+last_reviewed_change_at: 2026-03-25T21:20:18+01:00
+last_heartbeat_result: HEARTBEAT_OK
+
+## Last actions
+- Created heartbeat state file on 2026-03-25T21:19:25+01:00
+- Heartbeat run 2026-03-25T21:20:18+01:00: no changes found
+- Heartbeat run 2026-03-25T21:48:00+01:00: no changes found
+- Heartbeat run 2026-03-25T22:18:00+01:00: no changes found
+- Heartbeat run 2026-03-25T23:19:28+01:00: no changes found
+- Heartbeat run 2026-03-25T23:48:52+01:00: no changes found
+- Heartbeat run 2026-03-26T00:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T01:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T02:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T03:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T03:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T04:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T04:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T05:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T05:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T06:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T06:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T07:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T07:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T08:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T08:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T09:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T09:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T10:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T10:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T11:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T11:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T12:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T12:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T13:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T13:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T14:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T14:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T15:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T15:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T16:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T16:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T17:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T17:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T18:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T18:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T19:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T19:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T20:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T20:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T21:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T21:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T22:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T22:48:00+01:00: no changes found
+- Heartbeat run 2026-03-26T23:18:00+01:00: no changes found
+- Heartbeat run 2026-03-26T23:48:00+01:00: no changes found
+- Heartbeat run 2026-03-27T00:18:00+01:00: no changes found
+- Heartbeat run 2026-03-27T00:48:00+01:00: no changes found
+- Heartbeat run 2026-03-27T01:18:00+01:00: no changes found
+- Heartbeat run 2026-03-27T01:48:00+01:00: no changes found
+- Heartbeat run 2026-03-27T02:18:00+01:00: no changes found
+- Heartbeat run 2026-03-27T02:48:00+01:00: no changes found
+- Heartbeat run 2026-03-27T03:18:00+01:00: no changes found
+- Heartbeat run 2026-03-27T03:48:00+01:00: no changes found
+- Heartbeat run 2026-03-27T04:18:00+01:00: no changes found
+- Heartbeat run 2026-03-27T04:48:00+01:00: no changes found
+- Heartbeat run 2026-03-27T05:18:00+01:00: no changes found
+- Heartbeat run 2026-03-27T05:48:00+01:00: no changes found
+- Heartbeat run 2026-03-27T06:18:00+01:00: no changes found
+- Heartbeat run 2026-03-27T06:48:00+01:00: no changes found
+- Heartbeat run 2026-03-27T07:18:00+01:00: no changes found
+- Heartbeat run 2026-03-27T07:48:00+01:00: no changes found
+- Heartbeat run 2026-03-27T08:18:00+01:00: no changes found
+- Heartbeat run 2026-03-27T08:48:00+01:00: no changes found
+- Heartbeat run 2026-03-27T09:18:00+01:00: no changes found
+- Heartbeat run 2026-03-27T09:48:00+01:00: no changes found
+- Heartbeat run 2026-03-27T10:18:00+01:00: no changes found
+- Heartbeat run 2026-03-27T10:48:00+01:00: no changes found
+- Heartbeat run 2026-03-27T11:18:00+01:00: no changes found
+- Heartbeat run 2026-03-27T11:48:00+01:00: no changes found
+- Heartbeat run 2026-03-27T12:18:00+01:00: no changes found
+- Heartbeat run 2026-03-27T12:48:00+01:00: no changes found
+- Heartbeat run 2026-03-27T13:18:00+01:00: no changes found
+- Heartbeat run 2026-03-27T13:58:00+01:00: no changes found
+- Heartbeat run 2026-03-27T16:06:00+01:00: no changes found
+- Heartbeat run 2026-03-28T14:26:00Z: no changes found
+- Heartbeat run 2026-03-28T14:56:00Z: no changes found in self-improving; servidor HTTP parou (porta 9000)
+- Heartbeat run 2026-03-28T15:17:00Z: no changes found; servidor HTTP ativo (porta 9000)
+- Heartbeat run 2026-03-28T15:24:00Z: no changes found; servidor HTTP ativo (porta 9000)
+- Heartbeat run 2026-03-28T15:25:00Z: no changes found; servidor HTTP ativo (porta 9000)
+- Heartbeat run 2026-03-28T15:47:00Z: no changes found; servidor HTTP ativo (porta 9000); aguardando instalação ferramentas
+- Heartbeat run 2026-03-28T15:50:00Z: no changes found; servidor HTTP ativo; sistema .clawrc criado; aguardando comando VPS para instalar Docker no container root
+- Heartbeat run 2026-03-28T15:57:00Z: no changes found; Docker CLI instalado via Homebrew; falta acesso ao socket (usuário não está no grupo docker); aguardando comando VPS: sudo usermod -aG docker \$(docker exec openclaw-old id -un)
+- Heartbeat run 2026-03-28T15:58:00Z: no changes found; status mantido; pendência: acesso Docker
+- Heartbeat run 2026-03-28T16:00:00Z: no changes found; status mantido; pendência: acesso Docker (aguardando comando VPS)
+- Heartbeat run 2026-03-28T16:13:00Z: no changes found; Docker funcionando; servidor HTTP ativo porta 8080; arquitetura organizada; deploy preparado (aguardando tunnel/externo)
+- Heartbeat run 2026-03-28T16:13:00Z: no changes found; Docker CLI reinstalado mas sem acesso; Vercel login iniciado (link KGCM-WHSC); aguardando usuário fazer login

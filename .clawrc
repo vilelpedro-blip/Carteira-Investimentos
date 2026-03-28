@@ -1,0 +1,186 @@
+# 🦞 OpenClaw Resource File
+# Carregar com: source /data/.openclaw/workspace/.clawrc
+
+# ============================================
+# ALIASES PARA FERRAMENTAS VIA CONTAINER ROOT
+# ============================================
+
+# Docker commands via container root
+claw-docker() {
+    docker exec openclaw-root docker "$@"
+}
+
+# System commands via container root
+claw-apt() {
+    docker exec openclaw-root apt-get "$@"
+}
+
+# Node.js via container root
+claw-node() {
+    docker exec openclaw-root node "$@"
+}
+
+claw-npm() {
+    docker exec openclaw-root npm "$@"
+}
+
+# Python via container root
+claw-python() {
+    docker exec openclaw-root python3 "$@"
+}
+
+claw-pip() {
+    docker exec openclaw-root pip3 "$@"
+}
+
+# System monitoring
+claw-htop() {
+    docker exec -it openclaw-root htop
+}
+
+claw-df() {
+    docker exec openclaw-root df -h
+}
+
+# File operations with root access
+claw-cat() {
+    docker exec openclaw-root cat "$@"
+}
+
+claw-ls() {
+    docker exec openclaw-root ls "$@"
+}
+
+# ============================================
+# FERRAMENTAS LOCAIS (já disponíveis)
+# ============================================
+
+# Já temos localmente:
+# curl, git, nano, python3, node, npm, brew
+
+# ============================================
+# FUNÇÕES ÚTEIS
+# ============================================
+
+# Deploy para Vercel
+claw-deploy() {
+    echo "🚀 Fazendo deploy para Vercel..."
+    cd /data/.openclaw/workspace
+    if command -v vercel &> /dev/null; then
+        vercel --prod
+    else
+        echo "Instalando Vercel CLI..."
+        npm install -g vercel
+        vercel --prod
+    fi
+}
+
+# Iniciar servidor HTTP
+claw-http() {
+    echo "🌐 Iniciando servidor HTTP na porta 9000..."
+    cd /data/.openclaw/workspace
+    python3 -m http.server 9000 &
+    echo "✅ Servidor iniciado: http://localhost:9000"
+}
+
+# Verificar status
+claw-status() {
+    echo "🦞 STATUS OPENCLAW"
+    echo "=================="
+    echo "Containers:"
+    docker ps --filter "name=openclaw" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+    echo ""
+    echo "Servidor HTTP:"
+    timeout 1 bash -c "echo > /dev/tcp/localhost/9000" 2>/dev/null && echo "✅ Porta 9000 ativa" || echo "❌ Porta 9000 inativa"
+    echo ""
+    echo "Ferramentas disponíveis:"
+    echo "  Local: curl, git, nano, python3, node, npm, brew"
+    echo "  Via container root: docker, apt, htop, system tools"
+}
+
+# Instalar Python packages localmente
+claw-python-setup() {
+    echo "🐍 Instalando Python packages..."
+    pip3 install pandas numpy matplotlib requests beautifulsoup4
+    echo "✅ Python packages instaladas"
+}
+
+# Instalar Node packages localmente
+claw-node-setup() {
+    echo "📦 Instalando Node.js packages..."
+    npm install -g vercel-cli netlify-cli @angular/cli @vue/cli
+    echo "✅ Node.js packages instaladas"
+}
+
+# Ajuda
+claw-help() {
+    echo "🦞 OPENCLAW HELP"
+    echo "================"
+    echo "Comandos disponíveis:"
+    echo ""
+    echo "🎯 FERRAMENTAS VIA CONTAINER ROOT:"
+    echo "  claw-docker    - Executar Docker commands"
+    echo "  claw-apt       - Instalar pacotes system"
+    echo "  claw-node      - Node.js via container root"
+    echo "  claw-python    - Python via container root"
+    echo "  claw-htop      - Monitorização sistema"
+    echo ""
+    echo "🚀 DEPLOY & SERVIÇOS:"
+    echo "  claw-deploy    - Deploy para Vercel"
+    echo "  claw-http      - Iniciar servidor HTTP"
+    echo "  claw-status    - Verificar status sistema"
+    echo ""
+    echo "🔧 SETUP:"
+    echo "  claw-python-setup - Instalar Python packages"
+    echo "  claw-node-setup   - Instalar Node.js packages"
+    echo ""
+    echo "📁 WORKSPACE: /data/.openclaw/workspace"
+    echo "🌐 HTTP Server: http://localhost:9000"
+}
+
+# Mensagem inicial
+echo "🦞 OpenClaw tools carregadas! Use 'claw-help' para ajuda."export PATH="/data/.openclaw/bin:$PATH"
+
+# Docker via socket
+alias docker='DOCKER_HOST=unix:///var/run/docker.sock /data/.openclaw/bin/docker'
+alias docker-ps='docker ps'
+alias docker-logs='docker logs'
+alias docker-exec='docker exec'
+alias docker-stop='docker stop'
+alias docker-rm='docker rm'
+
+echo "🦞 Docker CLI configurado via socket!"
+
+# ============================================
+# GESTÃO DE ARQUITETURA
+# ============================================
+
+claw-arch-status() {
+    /data/.openclaw/workspace/scripts/gerir-arquitetura.sh status
+}
+
+claw-arch-restart() {
+    /data/.openclaw/workspace/scripts/gerir-arquitetura.sh restart
+}
+
+claw-arch-logs() {
+    /data/.openclaw/workspace/scripts/gerir-arquitetura.sh logs
+}
+
+claw-arch-deploy() {
+    /data/.openclaw/workspace/scripts/gerir-arquitetura.sh deploy
+}
+
+claw-http-start() {
+    /data/.openclaw/workspace/scripts/gerir-arquitetura.sh http-start
+}
+
+claw-http-stop() {
+    /data/.openclaw/workspace/scripts/gerir-arquitetura.sh http-stop
+}
+
+claw-backup() {
+    /data/.openclaw/workspace/scripts/gerir-arquitetura.sh backup
+}
+
+echo "🏗️  Comandos de arquitetura adicionados! Use 'claw-arch-status' para verificar."

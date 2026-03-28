@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carteira de Investimentos - Teste</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --primary:#2563eb;--primary-dark:#1d4ed8;--success:#10b981;--danger:#ef4444;
+            --warning:#f59e0b;--dark:#1f2937;--light:#f9fafb;--gray:#6b7280;--border:#e5e7eb;
+            --shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);
+            --radius:8px;--transition:all 0.3s ease
+        }
+        body{font-family:'Inter',sans-serif;background:#f3f4f6;color:var(--dark);line-height:1.6}
+        .container{max-width:1400px;margin:0 auto;padding:0 20px}
+        .header{display:flex;justify-content:space-between;align-items:center;padding:20px 0;margin-bottom:30px;border-bottom:1px solid var(--border)}
+        .logo{display:flex;align-items:center;gap:12px}
+        .logo i{font-size:2rem;color:var(--primary)}
+        .logo h1{font-size:1.8rem;font-weight:700}
+        .header-controls{display:flex;align-items:center;gap:15px}
+        select{padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);background:white;font-size:0.9rem;cursor:pointer}
+        .btn{padding:10px 20px;border:none;border-radius:var(--radius);font-size:0.9rem;font-weight:500;cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;gap:8px}
+        .btn-primary{background:var(--primary);color:white}
+        .btn-primary:hover{background:var(--primary-dark)}
+        .btn-success{background:var(--success);color:white}
+        .btn-danger{background:var(--danger);color:white}
+        .dashboard{display:flex;flex-direction:column;gap:30px}
+        .card{background:white;border-radius:var(--radius);padding:25px;box-shadow:var(--shadow)}
+        .card h2{font-size:1.3rem;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+        .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
+        .summary-item{display:flex;flex-direction:column;gap:8px}
+        .summary-item .label{font-size:0.9rem;color:var(--gray);font-weight:500}
+        .summary-item .value{font-size:1.8rem;font-weight:700}
+        .positive{color:var(--success)!important}
+        .negative{color:var(--danger)!important}
+        .main-content{display:grid;grid-template-columns:2fr 1fr;gap:30px}
+        @media (max-width:1024px){.main-content{grid-template-columns:1fr}}
+        .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+        .chart-controls{display:flex;gap:10px}
+        .time-btn{padding:6px 12px;border:1px solid var(--border);background:white;border-radius:4px;font-size:0.85rem;cursor:pointer}
+        .time-btn.active{background:var(--primary);color:white;border-color:var(--primary)}
+        .form-group{margin-bottom:20px}
+        .form-group label{display:block;margin-bottom:8px;font-size:0.9rem;font-weight:500}
+        .form-group input,.form-group select{width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius);font-size:0.95rem}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+        .bottom-content{display:grid;grid-template-columns:2fr 1fr;gap:30px}
+        @media (max-width:1024px){.bottom-content{grid-template-columns:1fr}}
+        .table-wrapper{overflow-x:auto}
+        table{width:100%;border-collapse:collapse}
+        thead{background:var(--light)}
+        th{padding:15px;text-align:left;font-weight:600;border-bottom:2px solid var(--border);white-space:nowrap}
+        td{padding:15px;border-bottom:1px solid var(--border);vertical-align:middle}
+        tbody tr:hover{background:var(--light)}
+        .asset-info{display:flex;align-items:center;gap:10px}
+        .asset-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;color:white}
+        .crypto{background:#f59e0b}
+        .stock{background:var(--primary)}
+        .table-actions{display:flex;gap:8px}
+        .action-btn{padding:6px 10px;border:none;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+        .news-list{display:flex;flex-direction:column;gap:15px}
+        .news-item{padding:15px;border:1px solid var(--border);border-radius:var(--radius);transition:var(--transition)}
+        .news-item:hover{border-color:var(--primary);box-shadow:var(--shadow)}
+        .news-meta{display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;color:var(--gray)}
+        .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center}
+        .modal-content{background:white;border-radius:var(--radius);padding:30px;width:90%;max-width:500px;position:relative}
+        .close-modal{position:absolute;top:15px;right:15px;font-size:1.5rem;cursor:pointer;color:var(--gray)}
+        #toast-container{position:fixed;top:20px;right:20px;z-index:1001;display:flex;flex-direction:column;gap:10px}
+        .toast{padding:15px 20px;border-radius:var(--radius);background:white;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;animation:slideIn 0.3s ease;min-width:300px}
+        .toast.success{border-left:4px solid var(--success)}
+        .toast.error{border-left:4px solid var(--danger)}
+        @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+        .footer{margin-top:50px;padding:30px 0;text-align:center;border-top:1px solid var(--border);color:var(--gray);font-size:0.9rem}
+        @media (max-width:768px){.header{flex-direction:column;gap:15px;text-align:center}.header-controls{width:100%;justify-content:center}.summary-grid{grid-template-columns:repeat(2,1fr)}.form-row{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <h1>Carteira Invest</h1>
+            </div>
+            <div class="header-controls">
+                <select id="currency-select">
+                    <option value="brl">BRL (R$)</option>
+                    <option value="usd">USD ($)</option>
+                    <option value="eur">EUR (€)</option>
+                </select>
+                <button id="refresh-btn" class="btn btn-primary">
+                    <i class="fas fa-sync-alt"></i> Atualizar
+                </button>
+            </div>
+        </header>
+
+        <main class="dashboard">
+            <section class="card portfolio-summary">
+                <div class="summary-card">
+                    <h2><i class="fas fa-wallet"></i> Resumo do Portfólio</h2>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <span class="label">Valor Total</span>
+                            <span id="total-value" class="value">R$ 0,00</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Lucro/Prejuízo</span>
+                            <span id="total-pnl" class="value">R$ 0,00</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Variação %</span>
+                            <span id="total-change" class="value">0.00%</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Total Ativos</span>
+                            <span id="total-assets" class="value">0</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="main-content">
+                <div class="card chart-container">
+                    <div class="chart-header">
+                        <h2><i class="fas fa-chart-line"></i> Evolução do Portfólio</h2>
+                        <div class="chart-controls">
+                            <button class="time-btn active" data-period="7d">7D</button>
+                            <button class="time-btn" data-period="30d">30D</button>
+                            <button class="time-btn" data-period="90d">90D</button>
+                            <button class="time-btn" data-period="1y">1A</button>
+                        </div>
+                    </div>
+                    <canvas id="portfolio-chart"></canvas>
+                </div>
+
+                <div class="card add-asset-form">
+                    <h2><i class="fas fa-plus-circle"></i> Adicionar Ativo</h2>
+                    <form id="add-asset-form">
+                        <div class="form-group">
+                            <label for="asset-type">Tipo de Ativo</label>
+                            <select id="asset-type" required>
+                                <option value="">Selecione...</option>
+                                <option value="crypto">Criptomoeda</option>
+                                <option value="stock">Ação</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="asset-symbol">Símbolo (ex: BTC, AAPL)</label>
+                            <input type="text" id="asset-symbol" placeholder="BTC, AAPL, etc." required>
+                        </div>
+                        <div class="form-group">
+                            <label for="asset-name">Nome do Ativo</label>
+                            <input type="text" id="asset-name" placeholder="Bitcoin, Apple Inc., etc." required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="asset-quantity">Quantidade</label>
+                                <input type="number" id="asset-quantity" step="0.000001" min="0" placeholder="1.5" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="asset-price">Preço de Compra</label>
+                                <input type="number" id="asset-price" step="0.01" min="0" placeholder="50000" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="asset-currency">Moeda de Compra</label>
+                            <select id="asset-currency" required>
+                                <option value="usd">USD ($)</option>
+                                <option value="brl">BRL (R$)</option>
+                                <option value="eur">EUR (€)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success" style="width: 100%;">
+                            <i class="fas fa-plus"></i> Adicionar à Carteira
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="bottom-content">
+                <div class="card assets-table-container">
+                    <div class="table-header">
+                        <h2><i class="fas fa-list"></i> Meus Ativos</h2>
+                        <div class="table-controls">
+                            <input type="text" id="search-assets" placeholder="Buscar ativos...">
+                            <select id="filter-type">
+                                <option value="all">Todos</option>
+                                <option value="crypto">Criptomoedas</option>
+                                <option value="stock">Ações</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="assets-table">
+                            <thead>
+                                <tr>
+                                    <th>Ativo</th>
+                                    <th>Quantidade</th>
+                                    <th>Preço Atual</th>
+                                    <th>Valor Investido</th>
+                                    <th>Valor Atual</th>
+                                    <th>P/L</th>
+                                    <th>Variação</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assets-table-body">
+                                <tr id="no-assets">
+                                    <td colspan="8" style="text-align: center; padding: 40px; color: var(--gray);">
+                                        <i class="fas fa-wallet" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                                        <p>Nenhum ativo na carteira. Adicione seu primeiro ativo!</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card news-feed">
+                    <div class="news-header">
+                        <h2><i class="fas fa-newspaper"></i> Notícias Financeiras</h2>
+                        <div class="news-filters">
+                            <button class="news-filter active" data-category="all">Todas</button>
+                            <button class="news-filter" data-category="crypto">Cripto</button>
+                            <button class="news-filter" data-category="stocks">Ações</button>
+                        </div>
+                    </div>
+                    <div class="news-list" id="news-list">
+                        <div class="loading-news">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Carregando notícias...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>Carteira de Investimentos - Teste</p>
+            <div class="footer-info">
+                <i class="fas fa-sync-alt"></i>
+                <span>Última atualização: <span id="last-update">Agora</span></span>
+            </div>
+        </footer>
+    </div>
+
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2><i class="fas fa-edit"></i> Editar Ativo</h2>
+            <form id="edit-asset-form">
+                <input type="hidden" id="edit-asset-id">
+                <div class="form-group">
+                    <label for="edit-quantity">Quantidade</label>
+                    <input type="number" id="edit-quantity" step="0.000001" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-price">Preço de Compra</label>
+                    <input type="number" id="edit-price" step="0.01" min="0" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <button type="button" id="delete-asset-btn" class="btn btn-danger">Excluir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        // Aplicação principal
+        class InvestmentApp {
+            constructor() {
+                this.portfolio = new PortfolioManager();
+                this.api = new APIManager();
+                this.chart = new PortfolioChart();
+                this.currentCurrency = 'brl';
+                this.exchangeRates = {
+                    usd: { brl: 5.0, eur: 0.92 },
+                    brl: { usd: 0.2, eur: 0.184 },
+                    eur: { usd: 1.087, brl: 5.435 }
+                };
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.loadPortfolio();
+                this.loadNews();
+                this.updateUI();
+                
+                // Carregar dados de exemplo automaticamente
+                setTimeout(() => {
+                    if (this.portfolio.getAssets().length === 0) {
+                        this.portfolio.generateSampleData();
+                        this.updateUI();
+                        this.showToast('Dados de exemplo carregados!', 'success');
+                    }
+                }, 500);
+            }
+
+            setupEventListeners() {
+                document.getElementById('currency-select').addEventListener('change', (e) => {
+                    this.currentCurrency = e.target.value;
+                    this.updateUI();
+                });
+
+                document.getElementById('refresh-btn').addEventListener('click', () => {
+                    this.refreshData();
+                });
+
+                document.getElementById('add-asset-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.addAsset();
+                });
+
+                document.getElementById('search-assets').addEventListener('input', (e) => {
+                    this.filterAssets(e.target.value);
+                });
+
+                document.getElementById('filter-type').addEventListener('change', (e) => {
+                    this.filterAssetsByType(e.target.value);
+                });
+
+                document.querySelectorAll('.time-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.chart.updateChart(this.portfolio.getPortfolioHistory(), e.target.dataset.period);
+                    });
+                });
+
+                document.querySelectorAll('.news-filter').forEach(filter => {
+                    filter.addEventListener('click', (e) => {
+                        document.querySelectorAll('.news-filter').forEach(f => f.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.filterNews(e.target.dataset.category);
+                    });
+                });
+
+                const modal = document.getElementById('edit-modal');
+                const closeModal = document.querySelector('.close-modal');
+                
+                closeModal.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
+
+                window.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+
+                document.getElementById('edit-asset-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.updateAsset();
+                });
+
+                document.getElementById('delete-asset-btn').addEventListener('click', () => {
+                    this.deleteAsset();
+                });
+            }
+
+            loadPortfolio() {
+                this.portfolio.loadFromStorage();
+            }
+
+            async refreshData() {
+                this.showToast('Atualizando dados...', 'info');
+                
+                try {
+                    // Simular atualização de preços
+                    this.portfolio.updatePrices();
+                    this.portfolio.saveToStorage();
+                    this.updateUI();
+                    this.showToast('Dados atualizados com sucesso!', 'success');
+                } catch (error) {
+                    console.error('Erro:', error);
+                    this.showToast('Erro ao atualizar dados', 'error');
+                }
+            }
+
+            addAsset() {
+                const type = document.getElementById('asset-type').value;
+                const symbol = document.getElementById('asset-symbol').value.toUpperCase();
+                const name = document.getElementById('asset-name').value;
+                const quantity = parseFloat(document.getElementById('asset-quantity').value);
+                const price = parseFloat(document.getElementById('asset-price').value);
+                const currency = document.getElementById('asset-currency').value;
+
+                if (!type || !symbol || !name || !quantity || !price) {
+                    this.showToast('Preencha todos os campos!', 'error');
+                    return;
+                }
+
+                const asset = {
+                    id: Date.now().toString(),
+                    type,
+                    symbol,
+                    name,
+                    quantity,
+                    purchasePrice: price,
+                    purchaseCurrency: currency,
+                    currentPrice: price * (1 + (Math.random() * 0.2 - 0.1)), // Variação aleatória
+                    currentCurrency: currency,
+                    purchaseDate: new Date().toISOString()
+                };
+
+                this.portfolio.addAsset(asset);
+                this.portfolio.saveToStorage();
+                
+                document.getElementById('add-asset-form').reset();
+                this.updateUI();
+                this.showToast('Ativo adicionado com sucesso!', 'success');
+            }
+
+            editAsset(assetId) {
+                const asset = this.portfolio.getAsset(assetId);
+                if (!asset) return;
+
+                const modal = document.getElementById('edit-modal');
+                document.getElementById('edit-asset-id').value = assetId;
+                document.getElementById('edit-quantity').value = asset.quantity;
+                document.getElementById('edit-price').value = asset.purchasePrice;
+                
+                modal.style.display = 'flex';
+            }
+
+            updateAsset() {
+                const assetId = document.getElementById('edit-asset-id').value;
+                const quantity = parseFloat(document.getElementById('edit-quantity').value);
+                const price = parseFloat(document.getElementById('edit-price').value);
+
+                if (!quantity || !price) {
+                    this.showToast('Preencha todos os campos!', 'error');
+                    return;
+                }
+
+                this.portfolio.updateAsset(assetId, { quantity, purchasePrice: price });
+                this.portfolio.saveToStorage();
+                
+                document.getElementById('edit-modal').style.display = 'none';
+                this.updateUI();
+                this.showToast('Ativo atualizado com sucesso!', 'success');
+            }
+
+            deleteAsset() {
+                const assetId = document.getElementById('edit-asset-id').value;
+                
+                if (confirm('Tem certeza que deseja excluir este ativo?')) {
+                    this.portfolio.removeAsset(assetId);
+                    this.portfolio.saveToStorage();
+                    
+                    document.getElementById('edit-modal').style.display = 'none';
+                    this.updateUI();
+                    this.showToast('Ativo excluído com sucesso!', 'success');
+                }
+            }
+
+            filterAssets(searchTerm) {
+                const assets = this.portfolio.getAssets();
+                const filtered = assets.filter(asset => 
+                    asset.symbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    asset.name.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+                this.renderAssetsTable(filtered);
+            }
+
+            filterAssetsByType(type) {
+                if (type === 'all') {
+                    this.renderAssetsTable(this.portfolio.getAssets());
+                } else {
+                    const filtered = this.portfolio.getAssets().filter(asset => asset.type === type);
+                    this.renderAssetsTable(filtered);
+                }
+            }
+
+            loadNews() {
+                const news = [
+                    {
+                        title: 'Bitcoin atinge US$ 52.000',
+                        description: 'Criptomoeda em alta com adoção institucional.',
+                        source: 'CoinDesk',
+                        category: 'crypto'
+                    },
+                    {
+                        title: 'Apple anuncia novos produtos',
+                        description: 'Ações sobem 3% após anúncio.',
+                        source: 'Bloomberg',
+                        category: 'stocks'
+                    },
+                    {
+                        title: 'Fed mantém taxas de juros',
+                        description: 'Decisão mantém estabilidade no mercado.',
+                        source: 'Reuters',
+                        category: 'macro'
+                    },
+                    {
+                        title: 'Microsoft supera expectativas',
+                        description: 'Crescimento forte em serviços em nuvem.',
+                        source: 'CNBC',
+                        category: 'stocks'
+                    },
+                    {
+                        title: 'Ethereum atualiza rede',
+                        description: 'Melhorias na escalabilidade e custos.',
+                        source: 'The Block',
+                        category: 'crypto'
+                    }
+                ];
+                
+                this.renderNews(news);
+            }
+
+            filterNews(category) {
+                const newsItems = document.querySelectorAll('.news-item');
+                newsItems.forEach(item => {
+                    if (category === 'all' || item.dataset.category === category) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+
+            updateUI() {
+                this.updateSummary();
+                this.renderAssetsTable(this.portfolio.getAssets());
+                this.chart.updateChart(this.portfolio.getPortfolioHistory(), '7d');
+                document.getElementById('last-update').textContent = new Date().toLocaleTimeString('pt-BR');
+            }
+
+            updateSummary() {
+                const summary = this.portfolio.getPortfolioSummary(this.currentCurrency, this.exchangeRates);
+                
+                document.getElementById('total-value').textContent = this.formatCurrency(summary.totalValue, this.currentCurrency);
+                document.getElementById('total-pnl').textContent = this.formatCurrency(summary.totalPnL, this.currentCurrency);
+                document.getElementById('total-change').textContent = `${summary.totalChange.toFixed(2)}%`;
+                document.getElementById('total-assets').textContent = summary.totalAssets;
+
+                const pnlElement = document.getElementById('total-pnl');
+                const changeElement = document.getElementById('total-change');
+                
+                pnlElement.className = `value ${summary.totalPnL >= 0 ? 'positive' : 'negative'}`;
+                changeElement.className = `value ${summary.totalChange >= 0 ? 'positive' : 'negative'}`;
+            }
+
+            renderAssetsTable(assets) {
+                const tbody = document.getElementById('assets-table-body');
+                tbody.innerHTML = '';
+
+                if (assets.length === 0) {
+                    tbody.innerHTML = `
+                        <tr id="no-assets">
+                            <td colspan="8" style="text-align: center; padding: 40px; color: var(--gray);">
+                                <i class="fas fa-wallet" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                                <p>Nenhum ativo na carteira. Adicione seu primeiro ativo!</p>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                assets.forEach(asset => {
+                    const converted = this.portfolio.convertAssetValue(asset, this.currentCurrency, this.exchangeRates);
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>
+                            <div class="asset-info">
+                                <div class="asset-icon ${asset.type === 'crypto' ? 'crypto' : 'stock'}">
+                                    ${asset.symbol.substring(0, 2)}
+                                </div>
+                                <div>
+                                    <div class="asset-symbol">${asset.symbol}</div>
+                                    <div class="asset-name">${asset.name}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${asset.quantity.toLocaleString('pt-BR', { minimumFractionDigits: 6, maximumFractionDigits: 6 })}</td>
+                        <td>${this.formatCurrency(converted.currentPrice, this.currentCurrency)}</td>
+                        <td>${this.formatCurrency(converted.investedValue, this.currentCurrency)}</td>
+                        <td>${this.formatCurrency(converted.currentValue, this.currentCurrency)}</td>
+                        <td class="${converted.pnl >= 0 ? 'positive' : 'negative'}">
+                            ${this.formatCurrency(converted.pnl, this.currentCurrency)}
+                        </td>
+                        <td class="${converted.change >= 0 ? 'positive' : 'negative'}">
+                            ${converted.change >= 0 ? '+' : ''}${converted.change.toFixed(2)}%
+                        </td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="action-btn" onclick="window.app.editAsset('${asset.id}')" style="background:rgba(37,99,235,0.1);color:var(--primary)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn" onclick="if(confirm('Excluir ${asset.symbol}?')) { window.app.portfolio.removeAsset('${asset.id}'); window.app.portfolio.saveToStorage(); window.app.updateUI(); }" style="background:rgba(239,68,68,0.1);color:var(--danger)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                });
+            }
+
+            renderNews(newsItems) {
+                const newsList = document.getElementById('news-list');
+                
+                if (!newsItems || newsItems.length === 0) {
+                    newsList.innerHTML = `
+                        <div class="loading-news">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>Não foi possível carregar notícias.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                newsList.innerHTML = '';
+                newsItems.forEach(news => {
+                    const item = document.createElement('div');
+                    item.className = 'news-item';
+                    item.dataset.category = news.category || 'macro';
+                    
+                    item.innerHTML = `
+                        <h3>${news.title}</h3>
+                        <p>${news.description || 'Sem descrição disponível.'}</p>
+                        <div class="news-meta">
+                            <span>${news.source || 'Fonte desconhecida'}</span>
+                            <span style="padding:3px 8px;border-radius:12px;font-size:0.75rem;font-weight:500;background:${news.category === 'crypto' ? 'rgba(245,158,11,0.1)' : news.category === 'stocks' ? 'rgba(37,99,235,0.1)' : 'rgba(16,185,129,0.1)'};color:${news.category === 'crypto' ? '#f59e0b' : news.category === 'stocks' ? 'var(--primary)' : 'var(--success)'}">
+                                ${news.category === 'crypto' ? 'Cripto' : 
+                                  news.category === 'stocks' ? 'Ações' : 'Macro'}
+                            </span>
+                        </div>
+                    `;
+                    
+                    newsList.appendChild(item);
+                });
+            }
+
+            formatCurrency(value, currency) {
+                const formatters = {
+                    brl: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }),
+                    usd: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }),
+                    eur: new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' })
+                };
+                
+                return formatters[currency].format(value);
+            }
+
+            showToast(message, type = 'info') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                
+                const icons = {
+                    success: 'fas fa-check-circle',
+                    error: 'fas fa-exclamation-circle',
+                    info: 'fas fa-info-circle'
+                };
+                
+                toast.innerHTML = `
+                    <i class="${icons[type]}"></i>
+                    <span>${message}</span>
+                `;
+                
+                container.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 5000);
+            }
+        }
+
+        // Gerenciador de Portfólio
+        class PortfolioManager {
+            constructor() {
+                this.assets = [];
+                this.history = [];
+                this.loadFromStorage();
+            }
+
+            loadFromStorage() {
+                try {
+                    const saved = localStorage.getItem('investment-portfolio-test');
+                    if (saved) {
+                        const data = JSON.parse(saved);
+                        this.assets = data.assets || [];
+                        this.history = data.history || [];
+                    }
+                } catch (error) {
+                    this.assets = [];
+                    this.history = [];
+                }
+            }
+
+            saveToStorage() {
+                try {
+                    const data = {
+                        assets: this.assets,
+                        history: this.history,
+                        lastUpdated: new Date().toISOString()
+                    };
+                    localStorage.setItem('investment-portfolio-test', JSON.stringify(data));
+                } catch (error) {
+                    console.error('Erro ao salvar:', error);
+                }
+            }
+
+            updatePrices() {
+                // Simular variação de preços
+                this.assets.forEach(asset => {
+                    const variation = (Math.random() - 0.5) * 0.05; // ±2.5%
+                    asset.currentPrice = asset.currentPrice * (1 + variation);
+                });
+                
+                this.saveHistory();
+            }
+
+            saveHistory() {
+                const totalValue = this.getPortfolioSummary('usd').totalValue;
+                this.history.push({
+                    date: new Date().toISOString(),
+                    value: totalValue
+                });
+                
+                if (this.history.length > 100) {
+                    this.history = this.history.slice(-100);
+                }
+            }
+
+            getPortfolioHistory() {
+                return this.history;
+            }
+
+            addAsset(asset) {
+                this.assets.push(asset);
+                this.saveHistory();
+            }
+
+            getAsset(id) {
+                return this.assets.find(a => a.id === id);
+            }
+
+            updateAsset(id, updates) {
+                const index = this.assets.findIndex(a => a.id === id);
+                if (index !== -1) {
+                    this.assets[index] = { ...this.assets[index], ...updates };
+                    this.saveHistory();
+                }
+            }
+
+            removeAsset(id) {
+                this.assets = this.assets.filter(a => a.id !== id);
+                this.saveHistory();
+            }
+
+            getAssets() {
+                return [...this.assets];
+            }
+
+            convertAssetValue(asset, targetCurrency, exchangeRates) {
+                let purchasePriceUSD = asset.purchasePrice;
+                if (asset.purchaseCurrency !== 'usd') {
+                    purchasePriceUSD = asset.purchasePrice / exchangeRates[asset.purchaseCurrency].usd;
+                }
+                
+                let currentPriceUSD = asset.currentPrice;
+                if (asset.currentCurrency !== 'usd') {
+                    currentPriceUSD = asset.currentPrice / exchangeRates[asset.currentCurrency].usd;
+                }
+                
+                let purchasePriceTarget, currentPriceTarget;
+                if (targetCurrency === 'usd') {
+                    purchasePriceTarget = purchasePriceUSD;
+                    currentPriceTarget = currentPriceUSD;
+                } else {
+                    purchasePriceTarget = purchasePriceUSD * exchangeRates.usd[targetCurrency];
+                    currentPriceTarget = currentPriceUSD * exchangeRates.usd[targetCurrency];
+                }
+                
+                const investedValue = asset.quantity * purchasePriceTarget;
+                const currentValue = asset.quantity * currentPriceTarget;
+                const pnl = currentValue - investedValue;
+                const change = ((currentValue / investedValue) - 1) * 100;
+                
+                return {
+                    purchasePrice: purchasePriceTarget,
+                    currentPrice: currentPriceTarget,
+                    investedValue,
+                    currentValue,
+                    pnl,
+                    change
+                };
+            }
+
+            getPortfolioSummary(targetCurrency, exchangeRates) {
+                let totalInvested = 0;
+                let totalCurrent = 0;
+                
+                this.assets.forEach(asset => {
+                    const converted = this.convertAssetValue(asset, targetCurrency, exchangeRates);
+                    totalInvested += converted.investedValue;
+                    totalCurrent += converted.currentValue;
+                });
+                
+                const totalPnL = totalCurrent - totalInvested;
+                const totalChange = totalInvested > 0 ? ((totalCurrent / totalInvested) - 1) * 100 : 0;
+                
+                return {
+                    totalValue: totalCurrent,
+                    totalInvested,
+                    totalPnL,
+                    totalChange,
+                    totalAssets: this.assets.length
+                };
+            }
+
+            generateSampleData() {
+                this.assets = [
+                    {
+                        id: '1',
+                        type: 'crypto',
+                        symbol: 'BTC',
+                        name: 'Bitcoin',
+                        quantity: 0.5,
+                        purchasePrice: 45000,
+                        purchaseCurrency: 'usd',
+                        currentPrice: 52000,
+                        currentCurrency: 'usd',
+                        purchaseDate: '2024-01-15T10:30:00Z'
+                    },
+                    {
+                        id: '2',
+                        type: 'crypto',
+                        symbol: 'ETH',
+                        name: 'Ethereum',
+                        quantity: 3.2,
+                        purchasePrice: 2800,
+                        purchaseCurrency: 'usd',
+                        currentPrice: 3100,
+                        currentCurrency: 'usd',
+                        purchaseDate: '2024-02-20T14:45:00Z'
+                    },
+                    {
+                        id: '3',
+                        type: 'stock',
+                        symbol: 'AAPL',
+                        name: 'Apple Inc.',
+                        quantity: 10,
+                        purchasePrice: 170,
+                        purchaseCurrency: 'usd',
+                        currentPrice: 185,
+                        currentCurrency: 'usd',
+                        purchaseDate: '2024-03-01T09:15:00Z'
+                    },
+                    {
+                        id: '4',
+                        type: 'stock',
+                        symbol: 'MSFT',
+                        name: 'Microsoft Corporation',
+                        quantity: 8,
+                        purchasePrice: 380,
+                        purchaseCurrency: 'usd',
+                        currentPrice: 420,
+                        currentCurrency: 'usd',
+                        purchaseDate: '2024-01-10T11:20:00Z'
+                    },
+                    {
+                        id: '5',
+                        type: 'stock',
+                        symbol: 'SAP',
+                        name: 'SAP SE',
+                        quantity: 15,
+                        purchasePrice: 140,
+                        purchaseCurrency: 'eur',
+                        currentPrice: 155,
+                        currentCurrency: 'eur',
+                        purchaseDate: '2024-02-05T16:30:00Z'
+                    }
+                ];
+                
+                this.history = [];
+                const baseValue = 50000;
+                for (let i = 30; i >= 0; i--) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    
+                    const variation = (Math.random() - 0.5) * 0.1;
+                    const value = baseValue * (1 + (i * 0.01) + variation);
+                    
+                    this.history.push({
+                        date: date.toISOString(),
+                        value: Math.max(value, 10000)
+                    });
+                }
+                
+                this.saveToStorage();
+                return this.assets;
+            }
+        }
+
+        // Gerenciador de APIs (simulado)
+        class APIManager {
+            async getCryptoPrices(symbols) {
+                // Simular resposta
+                return {
+                    'BTC': { usd: 52000 + (Math.random() * 1000 - 500) },
+                    'ETH': { usd: 3100 + (Math.random() * 100 - 50) }
+                };
+            }
+        }
+
+        // Gráfico do Portfólio
+        class PortfolioChart {
+            constructor() {
+                this.chart = null;
+                this.init();
+            }
+
+            init() {
+                const ctx = document.getElementById('portfolio-chart').getContext('2d');
+                
+                this.chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Valor do Portfólio',
+                            data: [],
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { display: false } },
+                            y: {
+                                beginAtZero: false,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            updateChart(history, period = '7d') {
+                if (!this.chart || !history || history.length === 0) return;
+
+                let filteredHistory = [...history];
+                const now = new Date();
+                
+                switch (period) {
+                    case '7d':
+                        const sevenDaysAgo = new Date(now.setDate(now.getDate() - 7));
+                        filteredHistory = history.filter(h => new Date(h.date) >= sevenDaysAgo);
+                        break;
+                    case '30d':
+                        const thirtyDaysAgo = new Date(now.setDate(now.getDate() - 30));
+                        filteredHistory = history.filter(h => new Date(h.date) >= thirtyDaysAgo);
+                        break;
+                    case '90d':
+                        const ninetyDaysAgo = new Date(now.setDate(now.getDate() - 90));
+                        filteredHistory = history.filter(h => new Date(h.date) >= ninetyDaysAgo);
+                        break;
+                    case '1y':
+                        const oneYearAgo = new Date(now.setFullYear(now.getFullYear() - 1));
+                        filteredHistory = history.filter(h => new Date(h.date) >= oneYearAgo);
+                        break;
+                }
+
+                if (filteredHistory.length < 2) {
+                    filteredHistory = history;
+                }
+
+                filteredHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                const labels = filteredHistory.map(h => {
+                    const date = new Date(h.date);
+                    return date.toLocaleDateString('pt-BR', { 
+                        month: 'short', 
+                        day: 'numeric' 
+                    });
+                });
+
+                const data = filteredHistory.map(h => h.value);
+
+                this.chart.data.labels = labels;
+                this.chart.data.datasets[0].data = data;
+                
+                const currentCurrency = window.app?.currentCurrency || 'brl';
+                const currencyFormats = {
+                    brl: 'BRL',
+                    usd: 'USD',
+                    eur: 'EUR'
+                };
+                
+                this.chart.options.scales.y.ticks.callback = function(value) {
+                    return value.toLocaleString('pt-BR', { 
+                        style: 'currency', 
+                        currency: currencyFormats[currentCurrency] || 'BRL' 
+                    });
+                };
+                
+                this.chart.update('none');
+            }
+        }
+
+        // Inicializar aplicação
+        document.addEventListener('DOMContentLoaded', () => {
+            window.app = new InvestmentApp();
+        });
+
+        // Funções para teste no console
+        window.generateSampleData = function() {
+            if (window.app) {
+                window.app.portfolio.generateSampleData();
+                window.app.updateUI();
+                window.app.showToast('Dados de exemplo gerados!', 'success');
+            }
+        };
+
+        window.clearPortfolio = function() {
+            if (window.app && confirm('Limpar toda a carteira?')) {
+                window.app.portfolio.assets = [];
+                window.app.portfolio.history = [];
+                window.app.portfolio.saveToStorage();
+                window.app.updateUI();
+                window.app.showToast('Carteira limpa!', 'info');
+            }
+        };
+
+        window.testAddAsset = function() {
+            if (window.app) {
+                document.getElementById('asset-type').value = 'crypto';
+                document.getElementById('asset-symbol').value = 'SOL';
+                document.getElementById('asset-name').value = 'Solana';
+                document.getElementById('asset-quantity').value = '5';
+                document.getElementById('asset-price').value = '120';
+                document.getElementById('asset-currency').value = 'usd';
+                
+                window.app.addAsset();
+            }
+        };
+    </script>
+</body>
+</html>

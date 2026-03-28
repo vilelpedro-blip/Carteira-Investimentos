@@ -1,0 +1,21 @@
+{
+  "name": "carteira-crypto",
+  "version": "1.0.0",
+  "description": "Carteira de Crypto/Ações - Dashboard HTML",
+  "main": "carteira-final.html",
+  "scripts": {
+    "start": "python3 -m http.server 9000",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "crypto",
+    "ações",
+    "carteira",
+    "dashboard"
+  ],
+  "author": "OpenClaw",
+  "license": "MIT",
+  "dependencies": {
+    "vercel": "^50.37.3"
+  }
+}

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>📱 Portal iPhone - Carteira Crypto</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        :root {
+            --primary: #007AFF;
+            --success: #34C759;
+            --dark: #1C1C1E;
+            --light: #F2F2F7;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding-top: 60px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .iphone-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            opacity: 0.8;
+            font-size: 16px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--success);
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .links-grid {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .app-link {
+            display: flex;
+            align-items: center;
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .app-link:hover, .app-link:active {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        .app-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .crypto-icon { background: linear-gradient(135deg, #F59E0B, #D97706); }
+        .test-icon { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
+        .files-icon { background: linear-gradient(135deg, #8B5CF6, #7C3AED); }
+        .docs-icon { background: linear-gradient(135deg, #10B981, #059669); }
+        
+        .app-info {
+            flex: 1;
+        }
+        
+        .app-name {
+            font-weight: 600;
+            font-size: 17px;
+            margin-bottom: 4px;
+        }
+        
+        .app-desc {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .arrow {
+            font-size: 20px;
+            opacity: 0.7;
+        }
+        
+        .qr-section {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 16px;
+        }
+        
+        .qr-placeholder {
+            width: 180px;
+            height: 180px;
+            background: white;
+            border-radius: 12px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            font-size: 14px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .instructions {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 12px;
+            opacity: 0.6;
+        }
+        
+        @media (max-width: 480px) {
+            .container { padding-top: 40px; }
+            h1 { font-size: 24px; }
+            .card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="iphone-icon">📱</div>
+            <h1>Portal iPhone</h1>
+            <div class="subtitle">Carteira Crypto & OpenClaw</div>
+        </div>
+        
+        <div class="card">
+            <div class="status-badge">✅ ONLINE</div>
+            <p>Sistema operacional e pronto para uso no iPhone.</p>
+            
+            <div class="links-grid" id="links-container">
+                <!-- Links serão gerados por JavaScript -->
+            </div>
+        </div>
+        
+        <div class="qr-section">
+            <h3 style="margin-bottom: 15px;">📲 QR Code de Acesso</h3>
+            <div class="qr-placeholder" id="qr-code">
+                Use "Adicionar à Tela de Início"<br>para acesso rápido
+            </div>
+            <p style="font-size: 14px; margin-top: 10px;">
+                <strong>Dica:</strong> Toque em partilhar (⎋) e "Adicionar à Tela de Início"
+            </p>
+        </div>
+        
+        <div class="instructions">
+            <strong>Instruções para iPhone:</strong><br>
+            1. Toque num link para abrir<br>
+            2. Toque em partilhar (⎋)<br>
+            3. Deslize para baixo e "Adicionar à Tela de Início"<br>
+            4. Dê um nome (ex: "Carteira Crypto")<br>
+            5. Toque em "Adicionar" - pronto!
+        </div>
+        
+        <div class="footer">
+            OpenClaw • Portal iPhone • Gerado automaticamente<br>
+            <span id="current-time"></span>
+        </div>
+    </div>
+    
+    <script>
+        // Detectar se está no iPhone/iOS
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isStandalone = window.navigator.standalone === true;
+        
+        // URLs base
+        const baseUrl = window.location.origin;
+        
+        // Aplicações disponíveis
+        const apps = [
+            {
+                id: 'carteira',
+                name: 'Carteira Crypto',
+                description: 'Gestão completa de investimentos',
+                icon: '📊',
+                iconClass: 'crypto-icon',
+                path: '/carteira-final.html'
+            },
+            {
+                id: 'teste',
+                name: 'Teste Rápido',
+                description: 'Verificar funcionamento',
+                icon: '✅',
+                iconClass: 'test-icon',
+                path: '/teste-real.html'
+            },
+            {
+                id: 'arquivos',
+                name: 'Arquivos',
+                description: 'Lista de todos os arquivos',
+                icon: '📁',
+                iconClass: 'files-icon',
+                path: '/'
+            },
+            {
+                id: 'openclaw',
+                name: 'OpenClaw Docs',
+                description: 'Documentação do projeto',
+                icon: '🦞',
+                iconClass: 'docs-icon',
+                path: 'https://docs.openclaw.ai',
+                external: true
+            }
+        ];
+        
+        // Gerar links
+        function generateLinks() {
+            const container = document.getElementById('links-container');
+            container.innerHTML = '';
+            
+            apps.forEach(app => {
+                const url = app.external ? app.path : baseUrl + app.path;
+                const link = document.createElement('a');
+                link.href = url;
+                link.className = 'app-link';
+                link.target = app.external ? '_blank' : '_self';
+                
+                link.innerHTML = `
+                    <div class="app-icon ${app.iconClass}">${app.icon}</div>
+                    <div class="app-info">
+                        <div class="app-name">${app.name}</div>
+                        <div class="app-desc">${app.description}</div>
+                    </div>
+                    <div class="arrow">→</div>
+                `;
+                
+                container.appendChild(link);
+            });
+        }
+        
+        // Atualizar hora
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false 
+            });
+            const dateStr = now.toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long'
+            });
+            document.getElementById('current-time').textContent = 
+                `${dateStr} • ${timeStr}`;
+        }
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            generateLinks();
+            updateTime();
+            setInterval(updateTime, 60000);
+            
+            // Aviso se não for iOS
+            if (!isIOS) {
+                const card = document.querySelector('.card');
+                const warning = document.createElement('div');
+                warning.style.cssText = `
+                    background: rgba(255, 193, 7, 0.2);
+                    border: 1px solid rgba(255, 193, 7, 0.5);
+                    border-radius: 12px;
+                    padding: 12px;
+                    margin-top: 15px;
+                    font-size: 14px;
+                `;
+                warning.innerHTML = '📱 <strong>Melhor experiência no iPhone:</strong> Este portal foi otimizado para iOS.';
+                card.appendChild(warning);
+            }
+            
+            // Se for standalone (adicionado à tela de início)
+            if (isStandalone) {
+                document.querySelector('.status-badge').textContent = '📌 NA TELA DE INÍCIO';
+                document.querySelector('.status-badge').style.background = '#007AFF';
+            }
+        });
+        
+        // Detectar mudanças de rede
+        window.addEventListener('online', () => {
+            document.querySelector('.status-badge').textContent = '✅ ONLINE';
+            document.querySelector('.status-badge').style.background = '#34C759';
+        });
+        
+        window.addEventListener('offline', () => {
+            document.querySelector('.status-badge').textContent = '⚠️ OFFLINE';
+            document.querySelector('.status-badge').style.background = '#FF3B30';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+                const currentBRL = current / rate;
+                const profitBRL = profit / rate;
+                
+                return [
+                    asset.symbol,
+                    `"${asset.name}"`,
+                    asset.type,
+                    asset.quantity,
+                    (asset.purchasePrice / rate).toFixed(2),
+                    (asset.currentPrice / rate).toFixed(2),
+                    investedBRL.toFixed(2),
+                    currentBRL.toFixed(2),
+                    profitBRL.toFixed(2),
+                    profitPercent.toFixed(2)
+                ].join(',');
+            });
+            
+            return [headers.join(','), ...rows].join('\n');
+        }
+
+        function downloadCSV(csv, filename) {
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        function editAsset(id) {
+            const asset = portfolio.assets.find(a => a.id === id);
+            if (!asset) return;
+            
+            // Pre-fill form
+            document.getElementById('asset-type').value = asset.type;
+            document.getElementById('asset-symbol').value = asset.symbol;
+            document.getElementById('asset-name').value = asset.name;
+            document.getElementById('asset-quantity').value = asset.quantity;
+            document.getElementById('asset-price').value = asset.purchasePrice;
+            document.getElementById('purchase-date').value = asset.purchaseDate;
+            
+            // Scroll to form
+            document.getElementById('add-asset-form').scrollIntoView({ behavior: 'smooth' });
+            
+            showNotification(`Editando ${asset.symbol} - altere os valores e clique em "Adicionar"`, 'info');
+        }
+
+        function deleteAsset(id) {
+            if (confirm('Tem certeza que deseja remover este ativo?')) {
+                const index = portfolio.assets.findIndex(a => a.id === id);
+                if (index !== -1) {
+                    const removed = portfolio.assets.splice(index, 1)[0];
+                    loadAssets();
+                    showNotification(`${removed.symbol} removido da carteira`, 'success');
+                }
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // Remove existing
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+            
+            // Create notification
+            const notification = document.createElement('div');
+            notification.className = `notification fade-in`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                background: ${type === 'success' ? '#059669' : type === 'error' ? '#dc2626' : '#2563eb'};
+                color: white;
+                border-radius: 12px;
+                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                max-width: 350px;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            
+            const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle';
+            notification.innerHTML = `
+                <i class="fas fa-${icon}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remove
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateX(20px)';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, 4000);
+            
+            // Click to dismiss
+            notification.addEventListener('click', () => notification.remove());
+        }
+
+        // Initial load
+        loadAssets();
+    </script>
+</body>
+</html>
